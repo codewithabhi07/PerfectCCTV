@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PERFECT CCTV - Business Quotation Pro</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Courier+Prime&family=Orbitron:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  </head>
+  <body>
+    <div class="app-container" data-theme="default">
+      <!-- Mobile Navigation -->
+      <nav class="mobile-nav">
+        <button class="nav-btn active" id="btn-edit" onclick="switchTab('edit')"><i class="fas fa-edit"></i> Edit</button>
+        <button class="nav-btn" id="btn-preview" onclick="switchTab('preview')"><i class="fas fa-eye"></i> Preview</button>
+      </nav>
+
+      <!-- Sidebar Tool Panel -->
+      <div class="input-panel active" id="input-panel">
+        <header class="app-header">
+          <div class="logo-icon">
+            <img src="cctv.png" alt="Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+            <i class="fas fa-shield-halved" style="display: none"></i>
+          </div>
+          <div>
+            <h1>PERFECT CCTV PRO</h1>
+            <p>Business Manager</p>
+          </div>
+          <button class="clear-btn" onclick="confirmClear()" title="New Quote">
+            <i class="fas fa-rotate-left"></i>
+          </button>
+        </header>
+
+        <div class="scroll-area">
+          <!-- Client Card -->
+          <section class="card">
+            <div class="card-header"><i class="fas fa-user-tie"></i> Client & Quote Info</div>
+            <div class="input-grid">
+              <div class="input-group"><label>Quote No.</label><input type="text" id="quotNo" readonly /></div>
+              <div class="input-group"><label>Date</label><input type="date" id="quotDate" oninput="updatePreview()" /></div>
+              <div class="input-group full"><label>Client Name</label><input type="text" id="custName" placeholder="Enter name" oninput="updatePreview()" /></div>
+              <div class="input-group full"><label>Site Address</label><input type="text" id="custAddress" placeholder="Installation address" oninput="updatePreview()" /></div>
+              <div class="input-group full"><label>Contact No.</label><input type="text" id="custContact" placeholder="Phone number" oninput="updatePreview()" /></div>
+            </div>
+          </section>
+
+          <!-- Theme & Business Details -->
+          <section class="card">
+            <div class="card-header"><i class="fas fa-palette"></i> Theme & Customization</div>
+            <div class="input-grid">
+              <div class="input-group full">
+                <label>Select Bill Theme</label>
+                <select id="billTheme" onchange="changeTheme()">
+                  <option value="cctv-specialist">NEW: CCTV Specialist</option>
+                  <option value="default">01. Default Pro</option>
+                  <option value="high-tech">02. High-Tech Blue</option>
+                  <option value="elite-gold">03. Elite Gold</option>
+                  <option value="industrial">04. Industrial Bold</option>
+                  <option value="minimalist">05. Minimalist Clean</option>
+                  <option value="cyber">06. Cyber Security</option>
+                  <option value="midnight">07. Midnight Gold</option>
+                  <option value="arctic">08. Arctic Frost</option>
+                  <option value="forest">09. Forest Guard</option>
+                  <option value="red-alert">10. Red Alert</option>
+                  <option value="royal">11. Royal Purple</option>
+                  <option value="blueprint">12. Blueprint Pro</option>
+                  <option value="steel">13. Steel Forge</option>
+                  <option value="orange">14. Vibrant Orange</option>
+                  <option value="ocean">15. Deep Ocean</option>
+                  <option value="neon">16. Neon Night</option>
+                  <option value="carbon">17. Carbon Fiber</option>
+                  <option value="eco">18. Eco Green</option>
+                  <option value="retro">19. Classic Retro</option>
+                  <option value="sunset">20. Sunset Premium</option>
+                  <option value="sentinel">21. Sentinel Dark</option>
+                  <option value="sky-guard">22. Sky Guard Cyan</option>
+                  <option value="hazard">23. Hazard Safety</option>
+                  <option value="matrix">24. Matrix Console</option>
+                  <option value="thermal">25. Thermal Vision</option>
+                  <option value="vault">26. Steel Vault</option>
+                  <option value="aurora">27. Aurora Security</option>
+                  <option value="shadow">28. Shadow Protocol</option>
+                  <option value="shield">29. Verified Shield</option>
+                  <option value="global">30. Global Watch</option>
+                </select>
+              </div>
+              <div class="input-group full"><label>Discount (₹)</label><input type="number" id="discountAmt" value="0" oninput="updatePreview()" /></div>
+              <div class="input-group full"><label>Terms & Conditions</label><textarea id="termsCond" rows="3" oninput="updatePreview()">1. Warranty: 1 Year on Electronic Parts.
+2. Installation within 48 hours.
+3. Payment: 50% Advance with Order.</textarea></div>
+            </div>
+          </section>
+
+          <!-- Quick Select -->
+          <section class="card">
+            <div class="card-header"><i class="fas fa-magnifying-glass"></i> Quick Select <input type="text" id="itemSearch" placeholder="Search..." oninput="filterItems()" /></div>
+            <div class="quick-select-grid" id="quickSelectGrid"></div>
+          </section>
+
+          <!-- Items -->
+          <section class="card">
+            <div class="card-header"><i class="fas fa-list"></i> Items (Max 20) <span id="item-count" class="count-badge">1/20</span></div>
+            <div id="itemsContainer">
+              <div class="item-row animated fadeIn">
+                <input type="text" class="item-desc" placeholder="Item" oninput="updatePreview()" />
+                <input type="number" class="item-qty" placeholder="Qty" value="1" oninput="updatePreview()" />
+                <input type="number" class="item-rate" placeholder="Rate" oninput="updatePreview()" />
+                <button class="remove-btn" onclick="removeItem(this)"><i class="fas fa-times"></i></button>
+              </div>
+            </div>
+            <button class="add-btn" id="addBtn" onclick="addItem()"><i class="fas fa-plus"></i> Add Manual Row</button>
+          </section>
+
+          <!-- History -->
+          <section class="card history-card">
+            <div class="card-header"><i class="fas fa-history"></i> Recent Quotes</div>
+            <div id="historyList" class="history-list"></div>
+          </section>
+        </div>
+
+        <footer class="input-footer">
+          <button class="btn whatsapp-btn" onclick="shareWhatsApp()" title="Send Text summary"><i class="fab fa-whatsapp"></i> Text</button>
+          <button class="btn share-pdf-btn" onclick="sharePDF()"><i class="fas fa-share-nodes"></i> Share PDF</button>
+          <button class="btn print-btn" onclick="printAndSave()"><i class="fas fa-file-pdf"></i> Print</button>
+        </footer>
+      </div>
+
+      <!-- Bill Preview Panel -->
+      <div class="preview-panel">
+        <div id="bill-preview" class="bill-container">
+          <div class="bill-top-design"></div>
+          <div class="bill-header">
+            <div class="logo-box">
+              <img src="cctv.png" alt="Perfect CCTV Logo" class="bill-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+              <div class="bill-logo-icon" style="display: none"><i class="fas fa-shield-halved"></i></div>
+            </div>
+            <div class="company-info">
+              <h2 class="company-name">PERFECT CCTV</h2>
+              <h2 class="company-name-small">INSTALLATION & SECURITY SYSTEM</h2>
+              <div class="contact-strip">
+                <span><i class="fas fa-phone"></i> +91 9370110212</span>
+                <span><i class="fas fa-location-dot"></i> Lasur Tal. Chopda, Jalgaon</span>
+              </div>
+            </div>
+            <div class="quote-badge"><span class="label">QUOTATION</span><span class="number" id="p-quotNo">#QT-001</span></div>
+          </div>
+          <div class="client-info-bar">
+            <div class="info-block"><label>PREPARED FOR</label><strong id="p-custName">Client Name</strong><p id="p-custAddress">Address Details</p><p id="p-custContact">Contact: --</p></div>
+            <div class="info-block text-right"><label>DATE ISSUED</label><strong id="p-date">--/--/----</strong><br/><label>PREPARED BY</label><strong>Amar Mahajan</strong></div>
+          </div>
+          <div class="estimate-title">ESTIMATE / QUOTATION</div>
+          <div class="table-wrapper">
+            <table class="professional-table">
+              <thead><tr><th width="8%">#</th><th width="52%">Description</th><th width="10%">Qty</th><th width="15%">Rate</th><th width="15%">Amount</th></tr></thead>
+              <tbody id="p-itemsBody"></tbody>
+            </table>
+          </div>
+          <div class="amount-words"><strong>Total Amount in Words:</strong> <span id="p-amountWords">Rupees Zero Only</span></div>
+          <div class="bill-summary">
+            <div class="terms-area"><h4>Terms & Conditions:</h4><ul id="p-terms"></ul></div>
+            <div class="calculation-area">
+              <div class="calc-box-main">
+                <div class="calc-row"><span>Subtotal:</span><span id="p-subtotal">₹0.00</span></div>
+                <div class="calc-row text-danger" id="p-discRow"><span>Discount:</span><span id="p-discount">-₹0.00</span></div>
+                <div class="calc-row grand-total-row"><span>Grand Total:</span><span id="p-grandtotal">₹0.00</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="bill-footer">
+            <div class="signature-box"><div class="sign-line"></div><p>Amar Mahajan</p><small>Proprietor</small></div>
+            <div class="thanks-msg"><p>Perfect CCTV!</p><small>Securing your world.</small></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

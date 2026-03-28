@@ -1,0 +1,389 @@
+:root {
+    --primary: #1e293b; --primary-light: #3b82f6; --secondary: #fbbf24; --dark: #0f172a; --light: #f8fafc; --white: #ffffff; --danger: #ef4444; --success: #22c55e; --gray: #94a3b8; --border: #000000; --sidebar-bg: #fdfdfd;
+}
+
+/* --- THEME ENGINE: DYNAMIC FORMATS --- */
+
+/* NEW: CCTV SPECIALIST - Industry Specific Layout */
+[data-theme="cctv-specialist"] {
+    --primary: #0891b2;
+    --primary-light: #22d3ee;
+    --secondary: #06b6d4;
+    --border: #0891b2;
+}
+[data-theme="cctv-specialist"] .bill-container {
+    border: 2px solid var(--primary);
+    background: #fff;
+    padding: 30px;
+    position: relative;
+}
+/* Viewfinder Corners */
+[data-theme="cctv-specialist"] .bill-container::after {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    border: 15px solid transparent;
+    border-top-color: var(--primary); border-left-color: var(--primary);
+    pointer-events: none; width: 50px; height: 50px;
+}
+[data-theme="cctv-specialist"] .bill-container::before {
+    content: ''; position: absolute; bottom: 0; right: 0;
+    border: 15px solid transparent;
+    border-bottom-color: var(--primary); border-right-color: var(--primary);
+    pointer-events: none; width: 50px; height: 50px;
+}
+[data-theme="cctv-specialist"] .estimate-title {
+    background: var(--primary);
+    clip-path: polygon(0% 15%, 15% 15%, 15% 0%, 85% 0%, 85% 15%, 100% 15%, 100% 85%, 85% 85%, 85% 100%, 15% 100%, 15% 85%, 0% 85%);
+    letter-spacing: 6px;
+    margin-bottom: 10px;
+}
+[data-theme="cctv-specialist"] .professional-table th { background: var(--primary); color: #fff; }
+[data-theme="cctv-specialist"] .quote-badge { background: #ecfeff; border: 2px dashed var(--primary); color: var(--primary); }
+
+/* 01. DEFAULT PRO */
+[data-theme="default"] .bill-container { border: 2px solid #000; }
+
+/* 02. HIGH-TECH BLUE: Futuristic Digital */
+[data-theme="high-tech"] { --primary: #0ea5e9; --border: #0ea5e9; }
+[data-theme="high-tech"] .bill-container { background: #fff radial-gradient(#0ea5e9 0.5px, transparent 0.5px); background-size: 15px 15px; border: 4px double var(--primary); font-family: 'Orbitron', sans-serif; }
+[data-theme="high-tech"] .estimate-title { clip-path: polygon(0 0, 100% 0, 90% 100%, 10% 100%); letter-spacing: 10px; }
+
+/* 03. ELITE GOLD: Premium Luxury */
+[data-theme="elite-gold"] { --primary: #451a03; --secondary: #fbbf24; --border: #92400e; }
+[data-theme="elite-gold"] .bill-container { border: 1px solid var(--secondary); padding: 40px; box-shadow: 0 0 0 10px #fff, 0 0 0 11px var(--secondary); }
+[data-theme="elite-gold"] .estimate-title { background: transparent; color: var(--primary); border-bottom: 2px solid var(--secondary); border-radius: 0; }
+
+/* 04. INDUSTRIAL BOLD: Heavy Duty */
+[data-theme="industrial"] { --primary: #18181b; --primary-light: #ea580c; --secondary: #f97316; }
+[data-theme="industrial"] .bill-container { border: 8px solid #000; }
+[data-theme="industrial"] .professional-table th { background: #000; color: #fff; transform: skew(-5deg); }
+[data-theme="industrial"] .estimate-title { background: #f97316; color: #000; font-weight: 900; transform: skew(-10deg); }
+
+/* 05. MINIMALIST CLEAN: Modern Apple */
+[data-theme="minimalist"] { --primary: #334155; --primary-light: #10b981; }
+[data-theme="minimalist"] .bill-container { border: none; box-shadow: 0 0 0 1px #e2e8f0; }
+[data-theme="minimalist"] .bill-top-design { height: 2px; }
+[data-theme="minimalist"] .estimate-title { background: #f1f5f9; color: var(--primary); border: none; }
+
+/* 06. CYBER SECURITY: Terminal Style */
+[data-theme="cyber"] { --primary: #00ff41; --dark: #000; --border: #00ff41; }
+[data-theme="cyber"] .bill-container { background: #000; color: #00ff41; border: 2px solid #00ff41; font-family: 'Courier Prime', monospace; }
+[data-theme="cyber"] .professional-table td, [data-theme="cyber"] .professional-table th { border-color: #00ff41; color: #00ff41; }
+[data-theme="cyber"] .bill-header, [data-theme="cyber"] .client-info-bar { border-color: #00ff41; background: #050505; }
+
+/* 07. MIDNIGHT GOLD: Dark Premium */
+[data-theme="midnight"] { --primary: #fbbf24; --dark: #111827; --border: #fbbf24; }
+[data-theme="midnight"] .bill-container { background: #111827; color: #fff; border: 2px solid #fbbf24; }
+[data-theme="midnight"] .professional-table th { background: #fbbf24; color: #000; }
+[data-theme="midnight"] .client-info-bar { background: #1f2937; border-color: #fbbf24; }
+
+/* 08. ARCTIC FROST: Ice Blue */
+[data-theme="arctic"] { --primary: #0284c7; --primary-light: #e0f2fe; --border: #bae6fd; }
+[data-theme="arctic"] .bill-container { background: linear-gradient(135deg, #fff, #f0f9ff); border: 2px solid #bae6fd; }
+[data-theme="arctic"] .estimate-title { background: #0284c7; border-radius: 50px; margin: 10px; }
+
+/* 09. FOREST GUARD: Outdoor Security */
+[data-theme="forest"] { --primary: #166534; --primary-light: #15803d; --secondary: #a3e635; }
+[data-theme="forest"] .bill-container { border: 3px solid #166534; border-radius: 20px; }
+[data-theme="forest"] .professional-table th { background: #166534; border-radius: 10px 10px 0 0; }
+
+/* 10. RED ALERT: High Priority */
+[data-theme="red-alert"] { --primary: #991b1b; --primary-light: #ef4444; --border: #7f1d1d; }
+[data-theme="red-alert"] .bill-container { border: 4px solid #991b1b; }
+[data-theme="red-alert"] .estimate-title { background: #ef4444; animation: pulse 2s infinite; }
+@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.8; } 100% { opacity: 1; } }
+
+/* 11. ROYAL PURPLE: Boutique Security */
+[data-theme="royal"] { --primary: #581c87; --secondary: #e9d5ff; --border: #7e22ce; }
+[data-theme="royal"] .bill-container { border: 2px solid #7e22ce; box-shadow: 10px 10px 0 #f3e8ff; }
+
+/* 12. BLUEPRINT: Engineering Technical */
+[data-theme="blueprint"] { --primary: #1e40af; --white: #fff; --border: #fff; }
+[data-theme="blueprint"] .bill-container { background: #1e40af; color: #fff; border: 1px solid #fff; background-image: linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px); background-size: 30px 30px; }
+[data-theme="blueprint"] .professional-table th, [data-theme="blueprint"] .professional-table td { border-color: #fff; color: #fff; }
+
+/* 13. STEEL FORGE: Metallic Industrial */
+[data-theme="steel"] { --primary: #3f3f46; --secondary: #a1a1aa; --border: #18181b; }
+[data-theme="steel"] .bill-container { background: #f4f4f5; border: 2px solid #18181b; box-shadow: inset 0 0 100px rgba(0,0,0,0.05); }
+
+/* 14. VIBRANT ORANGE: Energy */
+[data-theme="orange"] { --primary: #ea580c; --secondary: #ffedd5; --border: #9a3412; }
+[data-theme="orange"] .bill-container { border: 3px solid #ea580c; border-radius: 0 50px 0 50px; }
+
+/* 15. DEEP OCEAN: Calm Corporate */
+[data-theme="ocean"] { --primary: #0c4a6e; --secondary: #0ea5e9; --border: #075985; }
+[data-theme="ocean"] .bill-container { border-left: 15px solid #0c4a6e; border-right: 2px solid #0c4a6e; }
+
+/* 16. NEON NIGHT: Cyberpunk */
+[data-theme="neon"] { --primary: #f0abfc; --dark: #000; --border: #f0abfc; }
+[data-theme="neon"] .bill-container { background: #000; color: #fff; border: 2px solid #f0abfc; box-shadow: 0 0 20px #f0abfc; }
+[data-theme="neon"] .estimate-title { text-shadow: 0 0 10px #f0abfc; border: 1px solid #f0abfc; background: transparent; }
+
+/* 17. CARBON FIBER: Textured Tech */
+[data-theme="carbon"] { --primary: #27272a; --secondary: #52525b; --border: #000; }
+[data-theme="carbon"] .bill-container { background: #18181b; color: #e4e4e7; border: 2px solid #000; }
+[data-theme="carbon"] .professional-table th { background: #000; }
+
+/* 18. ECO GREEN: Nature/Farm */
+[data-theme="eco"] { --primary: #15803d; --secondary: #dcfce7; --border: #166534; }
+[data-theme="eco"] .bill-container { border: 2px dashed #15803d; background: #f0fdf4; }
+
+/* 19. RETRO CLASSIC: Typewriter Trust */
+[data-theme="retro"] { --primary: #000; --white: #fff; --border: #000; }
+[data-theme="retro"] .bill-container { font-family: 'Courier Prime', monospace; border: 1px solid #000; padding: 50px; background: #fffef0; }
+[data-theme="retro"] .estimate-title { background: #000; border-radius: 0; }
+
+/* 20. SUNSET PREMIUM: Warm Gradient */
+[data-theme="sunset"] { --primary: #be123c; --secondary: #fef2f2; --border: #be123c; }
+[data-theme="sunset"] .bill-container { background: linear-gradient(to bottom, #fff, #fff1f2); border: 2px solid #be123c; }
+
+/* 21. SENTINEL DARK: Tech Lens Flare */
+[data-theme="sentinel"] { --primary: #1e293b; --secondary: #38bdf8; --border: #334155; }
+[data-theme="sentinel"] .bill-container { background: #0f172a; color: #f8fafc; border: 1px solid #334155; }
+[data-theme="sentinel"] .bill-container::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100px; background: radial-gradient(circle at 20% 50%, rgba(56, 189, 248, 0.1), transparent 70%); pointer-events: none; }
+[data-theme="sentinel"] .professional-table th { background: #334155; border-color: #475569; }
+[data-theme="sentinel"] .professional-table td { border-color: #334155; color: #cbd5e1; }
+
+/* 22. SKY GUARD: Drone Cyan */
+[data-theme="sky-guard"] { --primary: #06b6d4; --secondary: #22d3ee; --border: #0891b2; }
+[data-theme="sky-guard"] .bill-container { border: 2px solid #06b6d4; border-radius: 0 40px 0 40px; box-shadow: 10px 10px 0 rgba(6, 182, 212, 0.1); }
+[data-theme="sky-guard"] .estimate-title { clip-path: polygon(0% 0%, 100% 0%, 95% 100%, 5% 100%); }
+
+/* 23. HAZARD SAFETY: Site High-Vis */
+[data-theme="hazard"] { --primary: #000; --secondary: #facc15; --border: #000; }
+[data-theme="hazard"] .bill-container { border: 10px solid #facc15; border-style: double; }
+[data-theme="hazard"] .estimate-title { background: #000; color: #facc15; font-family: 'Orbitron', sans-serif; font-weight: 900; }
+[data-theme="hazard"] .professional-table th { background: #facc15; color: #000; border-color: #000; }
+
+/* 24. MATRIX CONSOLE: Digital Expert */
+[data-theme="matrix"] { --primary: #22c55e; --dark: #000; --border: #166534; }
+[data-theme="matrix"] .bill-container { background: #000; color: #22c55e; font-family: 'Courier Prime', monospace; border: 1px solid #166534; }
+[data-theme="matrix"] .professional-table td, [data-theme="matrix"] .professional-table th { border-color: #166534; }
+[data-theme="matrix"] .bill-top-design { background: repeating-linear-gradient(90deg, #000, #000 2px, #22c55e 2px, #22c55e 4px); }
+
+/* 25. THERMAL VISION: Tech Gradient */
+[data-theme="thermal"] { --primary: #4f46e5; --secondary: #f43f5e; --border: #4338ca; }
+[data-theme="thermal"] .bill-container { border: 3px solid transparent; background: linear-gradient(white, white) padding-box, linear-gradient(to right, #4f46e5, #f43f5e) border-box; }
+[data-theme="thermal"] .estimate-title { background: linear-gradient(to right, #4f46e5, #f43f5e); }
+
+/* 26. STEEL VAULT: Bank Grade Secure */
+[data-theme="vault"] { --primary: #334155; --secondary: #94a3b8; --border: #1e293b; }
+[data-theme="vault"] .bill-container { background: #f1f5f9; border: 4px solid #1e293b; border-radius: 15px; }
+[data-theme="vault"] .logo-box { border-radius: 50%; border-width: 4px; }
+
+/* 27. AURORA SECURITY: Premium Modern */
+[data-theme="aurora"] { --primary: #6366f1; --secondary: #a855f7; --border: #4f46e5; }
+[data-theme="aurora"] .bill-container { border: none; box-shadow: 0 0 40px rgba(99, 102, 241, 0.1); border-radius: 30px; }
+[data-theme="aurora"] .estimate-title { background: linear-gradient(to right, #6366f1, #a855f7); border-radius: 20px; }
+
+/* 28. SHADOW PROTOCOL: Stealth Tech */
+[data-theme="shadow"] { --primary: #000; --secondary: #3f3f46; --border: #18181b; }
+[data-theme="shadow"] .bill-container { background: #18181b; color: #71717a; border: 1px solid #27272a; }
+[data-theme="shadow"] .professional-table th { background: #000; color: #fff; }
+[data-theme="shadow"] .client-info-bar { background: #09090b; border-color: #27272a; }
+
+/* 29. VERIFIED SHIELD: Safe Trust */
+[data-theme="shield"] { --primary: #15803d; --secondary: #22c55e; --border: #166534; }
+[data-theme="shield"] .bill-container { border: 2px solid #15803d; }
+[data-theme="shield"] .quote-badge::before { content: '\f3ed'; font-family: 'Font Awesome 6 Free'; font-weight: 900; margin-right: 5px; }
+
+/* 30. GLOBAL WATCH: Corporate Surveillance */
+[data-theme="global"] { --primary: #1e3a8a; --secondary: #3b82f6; --border: #1e40af; }
+[data-theme="global"] .bill-container { background: #fff url('https://www.transparenttextures.com/patterns/graphy.png'); border: 2px solid #1e3a8a; }
+[data-theme="global"] .professional-table th { background: #1e3a8a; }
+
+/* --- BASE STYLES --- */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Poppins', sans-serif; background-color: #0f172a; min-height: 100vh; }
+.app-container { display: flex; height: 100vh; flex-direction: row; }
+
+/* Mobile Navigation */
+.mobile-nav {
+    display: none;
+    background: #1e293b;
+    padding: 10px;
+    gap: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+.nav-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: #334155;
+    color: #94a3b8;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+}
+.nav-btn.active {
+    background: #3b82f6;
+    color: white;
+}
+
+/* Sidebar */
+.input-panel { width: 340px; background: #fff; display: flex; flex-direction: column; box-shadow: 10px 0 40px rgba(0,0,0,0.2); z-index: 100; flex-shrink: 0; border-right: 1px solid #ddd; }
+.app-header { padding: 12px; background: linear-gradient(135deg, #1e293b, #334155); color: white; display: flex; align-items: center; gap: 10px; border-bottom: 3px solid #fbbf24; }
+.logo-icon { background: #fff; width: 35px; height: 35px; border-radius: 8px; overflow: hidden; }
+.logo-icon img { width: 100%; height: 100%; object-fit: contain; }
+.app-header h1 { font-size: 0.8rem; font-weight: 800; flex: 1; }
+.clear-btn { background: rgba(255,255,255,0.2); border: none; color: white; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; }
+.scroll-area { flex: 1; overflow-y: auto; padding: 15px; }
+.card { background: #fff; border: 1px solid #edf2f7; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+.card-header { font-weight: 800; font-size: 0.65rem; margin-bottom: 10px; color: #3b82f6; display: flex; justify-content: space-between; align-items: center; text-transform: uppercase; }
+input, select, textarea { width: 100%; padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.75rem; font-family: inherit; background: #f8fafc; }
+.input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.input-group.full { grid-column: span 2; }
+label { font-size: 0.55rem; font-weight: 800; color: #64748b; margin-bottom: 2px; display: block; }
+.item-row { display: flex; gap: 5px; margin-bottom: 6px; background: #f8fafc; padding: 4px; border-radius: 8px; }
+.remove-btn { background: #fee2e2; color: #ef4444; border: none; padding: 5px 8px; border-radius: 6px; cursor: pointer; }
+.add-btn { width: 100%; padding: 8px; background: #eff6ff; border: 2px dashed #3b82f6; border-radius: 10px; color: #3b82f6; font-weight: 800; cursor: pointer; font-size: 0.7rem; }
+.quick-select-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 5px; max-height: 120px; overflow-y: auto; }
+.quick-item { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 5px 3px; font-size: 0.55rem; font-weight: 700; cursor: pointer; }
+.quick-item:hover { background: #3b82f6; color: white; }
+.input-footer { padding: 12px; border-top: 1px solid #e2e8f0; display: flex; gap: 10px; background: #fff; }
+.btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: 800; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.whatsapp-btn { background: #22c55e; color: #fff; }
+.share-pdf-btn { background: #4f46e5; color: #fff; }
+.print-btn { background: #1e293b; color: #fff; }
+
+/* Bill Preview Area */
+.preview-panel { flex: 1; padding: 20px; overflow-y: auto; display: flex; justify-content: center; align-items: flex-start; background: radial-gradient(circle at center, #1e293b, #0f172a); }
+.bill-container { width: 210mm; min-height: 296mm; background: white; padding: 15px 35px; position: relative; border: 2px solid var(--border); display: flex; flex-direction: column; box-shadow: 0 30px 60px rgba(0,0,0,0.5); }
+.bill-top-design { position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(to right, #1e3a8a, #3b82f6, #fbbf24); }
+.bill-header { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 2px solid var(--border); }
+.logo-box { width: 70px; height: 70px; border: 2px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #fff; }
+.bill-logo-img { width: 90%; height: 90%; object-fit: contain; }
+.company-info { flex: 1; }
+.company-name { font-size: 1.3rem; font-weight: 900; color: var(--primary); line-height: 1; text-transform: uppercase; }
+.company-name-small { font-size: 0.9rem; font-weight: 700; color: var(--primary-light); margin-top: 2px; }
+.contact-strip { margin-top: 5px; font-size: 0.68rem; font-weight: 700; display: flex; gap: 15px; }
+.quote-badge { text-align: center; border: 2px solid var(--border); padding: 8px 15px; border-radius: 8px; background: #f8fafc; }
+.quote-badge .label { font-size: 0.6rem; font-weight: 900; display: block; color: var(--gray); }
+.quote-badge .number { font-size: 0.95rem; font-weight: 900; color: var(--primary); }
+.client-info-bar { display: grid; grid-template-columns: 1fr 1fr; background: #f8fafc; padding: 10px; border: 1.5px solid var(--border); border-radius: 8px; margin-bottom: 10px; }
+.info-block label { font-size: 0.5rem; color: var(--primary-light); font-weight: 900; text-transform: uppercase; }
+.info-block strong { font-size: 0.8rem; display: block; color: var(--primary); }
+.info-block p { font-size: 0.7rem; font-weight: 600; line-height: 1.2; }
+.estimate-title { background: var(--primary); color: #fff; padding: 5px; font-weight: 900; font-size: 0.8rem; text-align: center; border: 1.5px solid var(--border); border-bottom: none; letter-spacing: 4px; }
+.table-wrapper { flex: 1; min-height: 400px; }
+.professional-table { width: 100%; border-collapse: collapse; border: 1.5px solid var(--border); }
+.professional-table th { background: #f1f5f9; padding: 6px 10px; text-align: left; font-size: 0.65rem; font-weight: 900; border: 1.5px solid var(--border); color: var(--primary); }
+.professional-table td { padding: 4px 10px; border: 1px solid var(--border); font-size: 0.72rem; font-weight: 600; }
+.professional-table tr:nth-child(even) { background-color: #fafafa; }
+.amount-words { margin: 8px 0; padding: 6px 10px; border: 1.2px solid var(--border); font-size: 0.7rem; background: #f8fafc; font-weight: 800; border-radius: 6px; }
+.bill-summary { display: grid; grid-template-columns: 1.2fr 1fr; gap: 15px; margin-top: 5px; padding-top: 8px; border-top: 2px solid var(--border); }
+.terms-area h4 { font-size: 0.7rem; font-weight: 900; color: var(--primary); margin-bottom: 3px; text-decoration: underline; }
+.terms-area ul { font-size: 0.62rem; font-weight: 600; padding-left: 12px; line-height: 1.2; }
+.calculation-area { display: flex; flex-direction: column; gap: 5px; }
+.calc-box-main { background: #f8fafc; padding: 8px; border: 1.2px solid var(--border); border-radius: 8px; }
+.calc-row { display: flex; justify-content: space-between; margin-bottom: 2px; font-size: 0.75rem; font-weight: 700; }
+.grand-total-row { border-top: 1.5px solid var(--border); padding-top: 4px; margin-top: 4px; font-size: 1rem; font-weight: 900; color: var(--primary-light); }
+.bill-footer { margin-top: 10px; display: flex; justify-content: space-between; align-items: flex-end; padding-top: 8px; border-top: 2px solid var(--border); }
+.signature-box { text-align: center; width: 160px; padding: 8px; border: 1.5px solid var(--border); background: #f9fafb; border-radius: 6px; }
+.sign-line { border-top: 1.5px solid var(--border); margin-bottom: 4px; }
+.signature-box p { font-weight: 900; font-size: 0.8rem; color: var(--primary); }
+.thanks-msg { text-align: right; border-right: 5px solid var(--secondary); padding-right: 10px; }
+.thanks-msg p { font-weight: 900; font-size: 0.9rem; color: var(--primary); }
+
+@media (max-width: 900px) {
+    body { overflow-y: auto; }
+    .app-container { flex-direction: column; height: auto; }
+    .mobile-nav { display: flex; }
+    
+    .input-panel { 
+        width: 100%; 
+        display: none; 
+        height: auto;
+    }
+    
+    .preview-panel { 
+        width: 100%; 
+        display: none; 
+        padding: 10px;
+        background: #0f172a;
+        min-height: calc(100vh - 60px);
+    }
+    
+    .input-panel.active, .preview-panel.active {
+        display: flex;
+    }
+
+    .bill-container { 
+        width: 100%; 
+        min-width: unset;
+        min-height: unset;
+        transform: scale(1) !important;
+        padding: 15px;
+        margin-bottom: 20px;
+        box-shadow: none;
+    }
+    
+    .table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .professional-table {
+        min-width: 500px;
+    }
+
+    .bill-summary {
+        grid-template-columns: 1fr;
+    }
+    
+    .client-info-bar {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .info-block.text-right {
+        text-align: left !important;
+    }
+    
+    .scroll-area {
+        height: auto;
+        overflow-y: visible;
+    }
+}
+
+@media print {
+    @page { size: A4; margin: 0; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    html, body { height: auto; overflow: visible !important; background: #fff !important; }
+    .mobile-nav, .input-panel { display: none !important; }
+    .preview-panel { padding: 0 !important; margin: 0 !important; display: block !important; background: #fff !important; }
+    .bill-container { 
+        box-shadow: none !important; 
+        border: 2px solid #000 !important; 
+        width: 210mm !important; 
+        min-height: 297mm !important; 
+        margin: 0 auto !important; 
+        padding: 15mm 20mm !important; 
+        transform: none !important; 
+        border-radius: 0 !important; 
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    /* Force professional layout for print */
+    .client-info-bar { 
+        display: grid !important; 
+        grid-template-columns: 1fr 1fr !important; 
+    }
+    .info-block.text-right { 
+        text-align: right !important; 
+    }
+    .bill-summary { 
+        display: grid !important; 
+        grid-template-columns: 1.2fr 1fr !important; 
+    }
+    .professional-table { 
+        width: 100% !important; 
+        min-width: 100% !important; 
+    }
+}
+
+.animated { animation: fadeIn 0.3s ease-in; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
