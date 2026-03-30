@@ -101,9 +101,17 @@ function applyTheme(theme) {
 }
 
 function updateQuoteDisplay() {
-    const formatted = `QT-${String(currentQuoteNo).padStart(3, '0')}`;
+    const docType = document.getElementById('docType').value;
+    const prefix = docType === 'bill' ? 'INV' : 'QT';
+    const formatted = `${prefix}-${String(currentQuoteNo).padStart(3, '0')}`;
     document.getElementById('quotNo').value = formatted;
     document.getElementById('p-quotNo').innerText = `#${formatted}`;
+    document.getElementById('label-docNo').innerText = docType === 'bill' ? 'Invoice No.' : 'Quote No.';
+}
+
+function updateDocType() {
+    updateQuoteDisplay();
+    updatePreview();
 }
 
 // --- ITEM MANAGEMENT ---
@@ -169,6 +177,22 @@ function removeItem(btn) {
 
 // --- CORE PREVIEW & CALCULATIONS ---
 function updatePreview() {
+    // 0. Document Type logic
+    const docType = document.getElementById('docType').value;
+    const previewContainer = document.getElementById('bill-preview');
+    const badgeLabel = document.querySelector('.quote-badge .label');
+    const estTitle = document.querySelector('.estimate-title');
+
+    if (docType === 'bill') {
+        previewContainer.classList.add('bill-mode');
+        badgeLabel.innerText = "INVOICE";
+        estTitle.innerText = "TAX INVOICE";
+    } else {
+        previewContainer.classList.remove('bill-mode');
+        badgeLabel.innerText = "QUOTATION";
+        estTitle.innerText = "ESTIMATE / QUOTATION";
+    }
+
     // 1. Details
     const name = document.getElementById('custName').value || "Client Name";
     const address = document.getElementById('custAddress').value || "Installation Address";
@@ -319,7 +343,9 @@ function confirmClear() {
 function shareWhatsApp() {
     const name = document.getElementById('custName').value || "Customer";
     const total = document.getElementById('p-grandtotal').innerText;
-    let msg = `*PERFECT CCTV INSTALLATION*\n*QUOTE:* ${document.getElementById('quotNo').value}\n*TO:* ${name}\n*TOTAL:* ${total}\n------------------\n`;
+    const docType = document.getElementById('docType').value;
+    const docLabel = docType === 'bill' ? 'INVOICE' : 'QUOTE';
+    let msg = `*PERFECT CCTV INSTALLATION*\n*${docLabel}:* ${document.getElementById('quotNo').value}\n*TO:* ${name}\n*TOTAL:* ${total}\n------------------\n`;
     document.querySelectorAll('.item-row').forEach((row, i) => {
         const d = row.querySelector('.item-desc').value;
         if (d) msg += `${i+1}. ${d} (${row.querySelector('.item-qty').value} qty) = ${row.querySelector('.item-rate').value * row.querySelector('.item-qty').value}\n`;
