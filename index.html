@@ -13,22 +13,35 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
     <link rel="stylesheet" href="style.css" />
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#1e293b" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-title" content="CCTV Pro" />
+    <link rel="apple-touch-icon" href="cctv.png" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   </head>
   <body>
     <div class="app-container" data-theme="default">
       <!-- Mobile Navigation -->
       <nav class="mobile-nav">
-        <button class="nav-btn active" id="btn-edit" onclick="switchTab('edit')"><i class="fas fa-edit"></i> Edit</button>
-        <button class="nav-btn" id="btn-preview" onclick="switchTab('preview')"><i class="fas fa-eye"></i> Preview</button>
+        <button class="nav-btn active" id="btn-edit" onclick="switchTab('edit')">
+          <i class="fas fa-pen-to-square"></i>
+          <span>Edit</span>
+        </button>
+        <button class="nav-btn" id="btn-preview" onclick="switchTab('preview')">
+          <i class="fas fa-file-invoice"></i>
+          <span>Preview</span>
+        </button>
       </nav>
 
       <!-- Sidebar Tool Panel -->
       <div class="input-panel active" id="input-panel">
         <header class="app-header">
-          <div class="logo-icon">
-            <img src="cctv.png" alt="Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+          <div class="logo-icon" onclick="document.getElementById('logoInput').click()">
+            <img id="app-logo-preview" src="cctv.png" alt="Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
             <i class="fas fa-shield-halved" style="display: none"></i>
+            <input type="file" id="logoInput" hidden accept="image/*" onchange="handleLogoUpload(this, 'businessLogo')" />
           </div>
           <div>
             <h1>PERFECT CCTV PRO</h1>
@@ -56,13 +69,74 @@
                 </select>
               </div>
               <div class="input-group"><label>Date</label><input type="date" id="quotDate" oninput="updatePreview()" /></div>
+              <div class="input-group"><label>Currency</label>
+                <select id="currency" onchange="updatePreview()">
+                  <option value="₹">₹ (INR)</option>
+                  <option value="$">$ (USD)</option>
+                  <option value="€">€ (EUR)</option>
+                </select>
+              </div>
               <div class="input-group full"><label>Client Name</label><input type="text" id="custName" placeholder="Enter name" oninput="updatePreview()" /></div>
               <div class="input-group full"><label>Site Address</label><input type="text" id="custAddress" placeholder="Installation address" oninput="updatePreview()" /></div>
               <div class="input-group full"><label>Contact No.</label><input type="text" id="custContact" placeholder="Phone number" oninput="updatePreview()" /></div>
             </div>
           </section>
 
-          <!-- Theme & Business Details -->
+          <!-- Business Profile -->
+          <section class="card">
+            <div class="card-header">
+              <span><i class="fas fa-building"></i> My Business Profile</span>
+              <button class="mini-btn" onclick="toggleSection('business-details')"><i class="fas fa-chevron-down"></i></button>
+            </div>
+            <div id="business-details" class="input-grid hidden">
+              <div class="input-group full"><label>My Business Name</label><input type="text" id="myBizName" value="PERFECT CCTV" oninput="updatePreview()" /></div>
+              <div class="input-group full"><label>My Contact No.</label><input type="text" id="myBizContact" value="+91 9370110212" oninput="updatePreview()" /></div>
+              <div class="input-group full"><label>My Address</label><input type="text" id="myBizAddress" value="Lasur Tal. Chopda, Jalgaon" oninput="updatePreview()" /></div>
+              <div class="input-group full"><label>Proprietor Name</label><input type="text" id="myBizOwner" value="Amar Mahajan" oninput="updatePreview()" /></div>
+              <div class="input-group full"><label>Footer Message</label><input type="text" id="myBizFooterMsg" value="Perfect CCTV!" oninput="updatePreview()" /></div>
+              <div class="input-group full"><label>Footer Slogan</label><input type="text" id="myBizFooterSlogan" value="Securing your world." oninput="updatePreview()" /></div>
+              <div class="input-group full"><label>GSTIN (Optional)</label><input type="text" id="myBizGST" placeholder="Enter GSTIN" oninput="updatePreview()" /></div>
+              <div class="input-group full"><label>Bank Details (A/C No, IFSC)</label><textarea id="myBizBank" rows="2" placeholder="Bank Name, A/C: ..., IFSC: ..." oninput="updatePreview()"></textarea></div>
+              <div class="input-group full">
+                <label>Digital Signature</label>
+                <button class="add-btn" onclick="document.getElementById('sigInput').click()">Upload Signature</button>
+                <input type="file" id="sigInput" hidden accept="image/*" onchange="handleLogoUpload(this, 'businessSig')" />
+              </div>
+            </div>
+          </section>
+
+          <!-- GST & Taxes -->
+          <section class="card">
+            <div class="card-header"><i class="fas fa-receipt"></i> Taxes & GST</div>
+            <div class="input-grid">
+              <div class="input-group">
+                <label>Enable GST</label>
+                <select id="gstEnabled" onchange="updatePreview()">
+                  <option value="no">No</option>
+                  <option value="yes">Yes</option>
+                </select>
+              </div>
+              <div class="input-group">
+                <label>GST Rate (%)</label>
+                <select id="gstRate" onchange="updatePreview()">
+                  <option value="0">0%</option>
+                  <option value="5">5%</option>
+                  <option value="12">12%</option>
+                  <option value="18">18%</option>
+                  <option value="28">28%</option>
+                </select>
+              </div>
+              <div class="input-group full">
+                <label>GST Type</label>
+                <select id="gstType" onchange="updatePreview()">
+                  <option value="cgst-sgst">CGST + SGST (Within State)</option>
+                  <option value="igst">IGST (Inter-State)</option>
+                </select>
+              </div>
+            </div>
+          </section>
+
+          <!-- Theme & Customization -->
           <section class="card">
             <div class="card-header"><i class="fas fa-palette"></i> Theme & Customization</div>
             <div class="input-grid">
@@ -109,6 +183,25 @@
             </div>
           </section>
 
+          <!-- Item Database Management -->
+          <section class="card">
+            <div class="card-header">
+              <span><i class="fas fa-database"></i> My Item Database</span>
+              <button class="mini-btn" onclick="toggleSection('item-db-area')"><i class="fas fa-chevron-down"></i></button>
+            </div>
+            <div id="item-db-area" class="hidden">
+               <div class="input-group" style="margin-bottom: 10px;">
+                 <label>Add New Item to List</label>
+                 <div style="display: flex; gap: 5px;">
+                   <input type="text" id="dbItemName" placeholder="Item Name" />
+                   <input type="number" id="dbItemRate" placeholder="Rate" style="width: 80px;" />
+                   <button class="mini-add-btn" onclick="addItemToDB()"><i class="fas fa-plus"></i></button>
+                 </div>
+               </div>
+               <div id="db-item-list" class="quick-select-grid" style="max-height: 150px;"></div>
+            </div>
+          </section>
+
           <!-- Quick Select -->
           <section class="card">
             <div class="card-header"><i class="fas fa-magnifying-glass"></i> Quick Select <input type="text" id="itemSearch" placeholder="Search..." oninput="filterItems()" /></div>
@@ -117,16 +210,35 @@
 
           <!-- Items -->
           <section class="card">
-            <div class="card-header"><i class="fas fa-list"></i> Items (Max 20) <span id="item-count" class="count-badge">1/20</span></div>
+            <div class="card-header"><i class="fas fa-list"></i> Items <span id="item-count" class="count-badge">1/50</span></div>
             <div id="itemsContainer">
               <div class="item-row animated fadeIn">
                 <input type="text" class="item-desc" placeholder="Item" oninput="updatePreview()" />
-                <input type="number" class="item-qty" placeholder="Qty" value="1" oninput="updatePreview()" />
+                <div style="display: flex; gap: 2px;">
+                  <input type="number" class="item-qty" placeholder="Qty" value="1" oninput="updatePreview()" />
+                  <select class="item-uom" onchange="updatePreview()" style="width: 60px; padding: 2px;">
+                    <option value="Nos">Nos</option>
+                    <option value="Mtr">Mtr</option>
+                    <option value="Pkt">Pkt</option>
+                    <option value="Day">Day</option>
+                    <option value="Job">Job</option>
+                  </select>
+                </div>
                 <input type="number" class="item-rate" placeholder="Rate" oninput="updatePreview()" />
                 <button class="remove-btn" onclick="removeItem(this)"><i class="fas fa-times"></i></button>
               </div>
             </div>
             <button class="add-btn" id="addBtn" onclick="addItem()"><i class="fas fa-plus"></i> Add Manual Row</button>
+          </section>
+
+          <!-- Data Management -->
+          <section class="card">
+            <div class="card-header"><i class="fas fa-cloud-arrow-up"></i> Backup & Data</div>
+            <div style="display: flex; gap: 10px;">
+              <button class="add-btn" onclick="exportData()" style="background: #f0fdf4; border-color: #22c55e; color: #166534;"><i class="fas fa-download"></i> Backup</button>
+              <button class="add-btn" onclick="document.getElementById('importInput').click()" style="background: #fff7ed; border-color: #f97316; color: #9a3412;"><i class="fas fa-upload"></i> Restore</button>
+              <input type="file" id="importInput" hidden accept=".json" onchange="importData(this)" />
+            </div>
           </section>
 
           <!-- History -->
@@ -138,8 +250,8 @@
 
         <footer class="input-footer">
           <button class="btn whatsapp-btn" onclick="shareWhatsApp()" title="Send Text summary"><i class="fab fa-whatsapp"></i> Text</button>
-          <button class="btn share-pdf-btn" onclick="sharePDF()"><i class="fas fa-share-nodes"></i> Share PDF</button>
-          <button class="btn print-btn" onclick="printAndSave()"><i class="fas fa-file-pdf"></i> Print</button>
+          <button class="btn share-pdf-btn" onclick="sharePDF()"><i class="fas fa-share-nodes"></i> Share</button>
+          <button class="btn print-btn" onclick="printAndSave()"><i class="fas fa-file-pdf"></i> Save</button>
         </footer>
       </div>
 
@@ -149,48 +261,75 @@
           <div class="bill-top-design"></div>
           <div class="bill-header">
             <div class="logo-box">
-              <img src="cctv.png" alt="Perfect CCTV Logo" class="bill-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+              <img id="p-logo" src="cctv.png" alt="Perfect CCTV Logo" class="bill-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
               <div class="bill-logo-icon" style="display: none"><i class="fas fa-shield-halved"></i></div>
             </div>
             <div class="company-info">
-              <h2 class="company-name">PERFECT CCTV</h2>
-              <h2 class="company-name-small">INSTALLATION & SECURITY SYSTEM</h2>
+              <h2 class="company-name" id="p-myBizName">PERFECT CCTV</h2>
+              <h2 class="company-name-small" id="p-myBizSlogan">INSTALLATION & SECURITY SYSTEM</h2>
               <div class="contact-strip">
-                <span><i class="fas fa-phone"></i> +91 9370110212</span>
-                <span><i class="fas fa-location-dot"></i> Lasur Tal. Chopda, Jalgaon</span>
+                <span><i class="fas fa-phone"></i> <span id="p-myBizContact">+91 9370110212</span></span>
+                <span><i class="fas fa-location-dot"></i> <span id="p-myBizAddress">Lasur Tal. Chopda, Jalgaon</span></span>
+              </div>
+              <div class="contact-strip" id="p-gstRow" style="display:none;">
+                <span><strong>GSTIN:</strong> <span id="p-myBizGST">--</span></span>
               </div>
             </div>
             <div class="quote-badge"><span class="label">QUOTATION</span><span class="number" id="p-quotNo">#QT-001</span></div>
           </div>
           <div class="client-info-bar">
             <div class="info-block"><label>PREPARED FOR</label><strong id="p-custName">Client Name</strong><p id="p-custAddress">Address Details</p><p id="p-custContact">Contact: --</p></div>
-            <div class="info-block text-right"><label>DATE ISSUED</label><strong id="p-date">--/--/----</strong><br/><label>PREPARED BY</label><strong>Amar Mahajan</strong></div>
+            <div class="info-block text-right"><label>DATE ISSUED</label><strong id="p-date">--/--/----</strong><br/><label>PREPARED BY</label><strong id="p-preparedBy">Amar Mahajan</strong></div>
           </div>
           <div class="estimate-title">ESTIMATE / QUOTATION</div>
           <div class="table-wrapper">
             <table class="professional-table">
-              <thead><tr><th width="8%">#</th><th width="52%">Description</th><th width="10%">Qty</th><th width="15%">Rate</th><th width="15%">Amount</th></tr></thead>
+              <thead><tr><th width="5%">#</th><th width="45%">Description</th><th width="10%">Qty</th><th width="10%">UOM</th><th width="15%">Rate</th><th width="15%">Amount</th></tr></thead>
               <tbody id="p-itemsBody"></tbody>
             </table>
           </div>
           <div class="amount-words"><strong>Total Amount in Words:</strong> <span id="p-amountWords">Rupees Zero Only</span></div>
           <div class="bill-summary">
-            <div class="terms-area"><h4>Terms & Conditions:</h4><ul id="p-terms"></ul></div>
+            <div class="terms-area">
+              <h4>Terms & Conditions:</h4>
+              <ul id="p-terms"></ul>
+              <div id="p-bankInfo" style="margin-top: 10px; font-size: 0.6rem;">
+                <strong>Bank Details:</strong><br/>
+                <span id="p-bankDetails">--</span>
+              </div>
+            </div>
             <div class="calculation-area">
               <div class="calc-box-main">
                 <div class="calc-row"><span>Subtotal:</span><span id="p-subtotal">₹0.00</span></div>
                 <div class="calc-row text-danger" id="p-discRow"><span>Discount:</span><span id="p-discount">-₹0.00</span></div>
+                <div id="gst-breakdown"></div>
                 <div class="calc-row grand-total-row"><span>Grand Total:</span><span id="p-grandtotal">₹0.00</span></div>
               </div>
             </div>
           </div>
           <div class="bill-footer">
-            <div class="signature-box"><div class="sign-line"></div><p>Amar Mahajan</p><small>Proprietor</small></div>
-            <div class="thanks-msg"><p>Perfect CCTV!</p><small>Securing your world.</small></div>
+            <div class="signature-box">
+              <div id="p-sig-container" style="height: 40px; display: flex; align-items: center; justify-content: center; margin-bottom: 5px;">
+                 <img id="p-sig-img" src="" style="max-height: 100%; display: none;" />
+              </div>
+              <div class="sign-line"></div>
+              <p id="p-footerName">Amar Mahajan</p><small>Proprietor</small></div>
+            <div class="thanks-msg"><p id="p-footerMsg">Perfect CCTV!</p><small id="p-footerSlogan">Securing your world.</small></div>
           </div>
         </div>
       </div>
     </div>
     <script src="script.js"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js').then(reg => {
+            console.log('SW Registered');
+          }).catch(err => {
+            console.log('SW Registration Failed', err);
+          });
+        });
+      }
+    </script>
   </body>
 </html>

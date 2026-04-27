@@ -1,20 +1,26 @@
 {
-  "name": "Perfect CCTV Pro",
+  "name": "Perfect CCTV Pro - Business Quotation",
   "short_name": "CCTV Pro",
+  "description": "Professional CCTV Business Quotation and Invoice Generator",
   "start_url": "./index.html",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#0f172a",
   "theme_color": "#1e293b",
+  "scope": "./",
+  "id": "com.perfectcctv.pro",
   "icons": [
     {
       "src": "cctv.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "cctv.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }

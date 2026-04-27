@@ -225,28 +225,37 @@
 body { font-family: 'Poppins', sans-serif; background-color: #0f172a; min-height: 100vh; }
 .app-container { display: flex; height: 100vh; flex-direction: row; }
 
-/* Mobile Navigation */
+/* Mobile Navigation - Now at Bottom for better reach */
 .mobile-nav {
     display: none;
     background: #1e293b;
-    padding: 10px;
-    gap: 10px;
-    position: sticky;
-    top: 0;
+    padding: 8px;
+    gap: 8px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
     z-index: 1000;
+    box-shadow: 0 -4px 10px rgba(0,0,0,0.3);
+    border-top: 1px solid #334155;
 }
 .nav-btn {
     flex: 1;
-    padding: 10px;
+    padding: 12px;
     border: none;
-    border-radius: 8px;
-    background: #334155;
+    border-radius: 12px;
+    background: transparent;
     color: #94a3b8;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
-    font-size: 0.9rem;
-    transition: all 0.3s;
+    font-size: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s;
 }
+.nav-btn i { font-size: 1.2rem; }
 .nav-btn.active {
     background: #3b82f6;
     color: white;
@@ -318,14 +327,17 @@ label { font-size: 0.55rem; font-weight: 800; color: #64748b; margin-bottom: 2px
 .thanks-msg p { font-weight: 900; font-size: 0.9rem; color: var(--primary); }
 
 @media (max-width: 900px) {
-    body { overflow-y: auto; }
-    .app-container { flex-direction: column; height: auto; }
+    body { overflow-x: hidden; position: fixed; width: 100%; height: 100%; }
+    .app-container { flex-direction: column; height: 100%; width: 100%; }
     .mobile-nav { display: flex; }
     
     .input-panel { 
         width: 100%; 
         display: none; 
-        height: auto;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
     }
     
     .preview-panel { 
@@ -333,7 +345,11 @@ label { font-size: 0.55rem; font-weight: 800; color: #64748b; margin-bottom: 2px
         display: none; 
         padding: 10px;
         background: #0f172a;
-        min-height: calc(100vh - 60px);
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        padding-bottom: 80px;
     }
     
     .input-panel.active, .preview-panel.active {
@@ -346,17 +362,18 @@ label { font-size: 0.55rem; font-weight: 800; color: #64748b; margin-bottom: 2px
         min-height: unset;
         transform: scale(1) !important;
         padding: 15px;
-        margin-bottom: 20px;
         box-shadow: none;
+        font-size: 14px;
     }
     
     .table-wrapper {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
+        margin-bottom: 10px;
     }
     
     .professional-table {
-        min-width: 500px;
+        min-width: 600px;
     }
 
     .bill-summary {
@@ -373,8 +390,22 @@ label { font-size: 0.55rem; font-weight: 800; color: #64748b; margin-bottom: 2px
     }
     
     .scroll-area {
-        height: auto;
-        overflow-y: visible;
+        height: 100%;
+        overflow-y: auto;
+        padding-bottom: 100px;
+    }
+
+    .input-footer {
+        position: sticky;
+        bottom: 0;
+        z-index: 10;
+        padding-bottom: 20px;
+        background: #fff;
+    }
+
+    /* Better touch targets */
+    input, select, textarea, .btn, .nav-btn, .quick-item {
+        min-height: 44px;
     }
 }
 
@@ -416,3 +447,30 @@ label { font-size: 0.55rem; font-weight: 800; color: #64748b; margin-bottom: 2px
 
 .animated { animation: fadeIn 0.3s ease-in; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+/* New Utility Styles */
+.hidden { display: none !important; }
+.mini-btn { background: none; border: none; color: var(--primary); cursor: pointer; padding: 2px 5px; }
+.mini-add-btn { background: var(--primary); color: white; border: none; border-radius: 4px; padding: 5px 10px; cursor: pointer; }
+.count-badge { background: var(--primary); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.6rem; }
+
+.item-uom { border: 1px solid #e2e8f0; border-radius: 4px; font-size: 0.7rem; background: #fff; }
+
+.gst-row { display: flex; justify-content: space-between; font-size: 0.7rem; color: #64748b; margin-bottom: 2px; }
+
+.logo-icon { cursor: pointer; position: relative; }
+.logo-icon:hover::after {
+    content: 'Change Logo';
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.5rem;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    padding: 2px 5px;
+    border-radius: 3px;
+    white-space: nowrap;
+}
+
+#p-sig-img { object-fit: contain; mix-blend-mode: multiply; }
