@@ -1,4 +1,4 @@
-const cacheName = 'cctv-pro-v2';
+const cacheName = 'cctv-pro-v5';
 const staticAssets = [
   './',
   './index.html',

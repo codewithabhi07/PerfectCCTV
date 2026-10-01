@@ -68,8 +68,23 @@
                   <option value="bill">Real Bill / Invoice</option>
                 </select>
               </div>
-              <div class="input-group"><label>Date</label><input type="date" id="quotDate" oninput="updatePreview()" /></div>
-              <div class="input-group"><label>Currency</label>
+              <div class="input-group">
+                <label id="label-quotDate">Date Issued</label>
+                <input type="date" id="quotDate" oninput="handleQuoteDateChange()" />
+              </div>
+              <div class="input-group">
+                <div class="label-with-actions">
+                  <label id="label-validDate">Valid Until</label>
+                  <div class="valid-presets">
+                    <button type="button" class="preset-pill" onclick="setValidityDays(7)" title="Set 7 days validity">+7d</button>
+                    <button type="button" class="preset-pill active" id="preset-15" onclick="setValidityDays(15)" title="Set 15 days validity">+15d</button>
+                    <button type="button" class="preset-pill" onclick="setValidityDays(30)" title="Set 30 days validity">+30d</button>
+                  </div>
+                </div>
+                <input type="date" id="validDate" oninput="onCustomValidDateChange()" />
+              </div>
+              <div class="input-group full">
+                <label>Currency</label>
                 <select id="currency" onchange="updatePreview()">
                   <option value="₹">₹ (INR)</option>
                   <option value="$">$ (USD)</option>
@@ -143,37 +158,44 @@
               <div class="input-group full">
                 <label>Select Bill Theme</label>
                 <select id="billTheme" onchange="changeTheme()">
-                  <option value="cctv-specialist">NEW: CCTV Specialist</option>
-                  <option value="default">01. Default Pro</option>
-                  <option value="high-tech">02. High-Tech Blue</option>
-                  <option value="elite-gold">03. Elite Gold</option>
-                  <option value="industrial">04. Industrial Bold</option>
-                  <option value="minimalist">05. Minimalist Clean</option>
-                  <option value="cyber">06. Cyber Security</option>
-                  <option value="midnight">07. Midnight Gold</option>
-                  <option value="arctic">08. Arctic Frost</option>
-                  <option value="forest">09. Forest Guard</option>
-                  <option value="red-alert">10. Red Alert</option>
-                  <option value="royal">11. Royal Purple</option>
-                  <option value="blueprint">12. Blueprint Pro</option>
-                  <option value="steel">13. Steel Forge</option>
-                  <option value="orange">14. Vibrant Orange</option>
-                  <option value="ocean">15. Deep Ocean</option>
-                  <option value="neon">16. Neon Night</option>
-                  <option value="carbon">17. Carbon Fiber</option>
-                  <option value="eco">18. Eco Green</option>
-                  <option value="retro">19. Classic Retro</option>
-                  <option value="sunset">20. Sunset Premium</option>
-                  <option value="sentinel">21. Sentinel Dark</option>
-                  <option value="sky-guard">22. Sky Guard Cyan</option>
-                  <option value="hazard">23. Hazard Safety</option>
-                  <option value="matrix">24. Matrix Console</option>
-                  <option value="thermal">25. Thermal Vision</option>
-                  <option value="vault">26. Steel Vault</option>
-                  <option value="aurora">27. Aurora Security</option>
-                  <option value="shadow">28. Shadow Protocol</option>
-                  <option value="shield">29. Verified Shield</option>
-                  <option value="global">30. Global Watch</option>
+                  <optgroup label="🌟 Featured & Recommended">
+                    <option value="best-premium">⭐ Best Premium Luxury</option>
+                    <option value="imported-pro">🌐 Imported Global Enterprise</option>
+                    <option value="standard-pro">📄 Standard Business Estimate</option>
+                    <option value="cctv-specialist">📹 CCTV Specialist Pro</option>
+                    <option value="default">01. Default Pro</option>
+                  </optgroup>
+                  <optgroup label="🎨 Modern & Creative Styles">
+                    <option value="high-tech">02. High-Tech Blue</option>
+                    <option value="elite-gold">03. Elite Gold</option>
+                    <option value="industrial">04. Industrial Bold</option>
+                    <option value="minimalist">05. Minimalist Clean</option>
+                    <option value="cyber">06. Cyber Security</option>
+                    <option value="midnight">07. Midnight Gold</option>
+                    <option value="arctic">08. Arctic Frost</option>
+                    <option value="forest">09. Forest Guard</option>
+                    <option value="red-alert">10. Red Alert</option>
+                    <option value="royal">11. Royal Purple</option>
+                    <option value="blueprint">12. Blueprint Pro</option>
+                    <option value="steel">13. Steel Forge</option>
+                    <option value="orange">14. Vibrant Orange</option>
+                    <option value="ocean">15. Deep Ocean</option>
+                    <option value="neon">16. Neon Night</option>
+                    <option value="carbon">17. Carbon Fiber</option>
+                    <option value="eco">18. Eco Green</option>
+                    <option value="retro">19. Classic Retro</option>
+                    <option value="sunset">20. Sunset Premium</option>
+                    <option value="sentinel">21. Sentinel Dark</option>
+                    <option value="sky-guard">22. Sky Guard Cyan</option>
+                    <option value="hazard">23. Hazard Safety</option>
+                    <option value="matrix">24. Matrix Console</option>
+                    <option value="thermal">25. Thermal Vision</option>
+                    <option value="vault">26. Steel Vault</option>
+                    <option value="aurora">27. Aurora Security</option>
+                    <option value="shadow">28. Shadow Protocol</option>
+                    <option value="shield">29. Verified Shield</option>
+                    <option value="global">30. Global Watch</option>
+                  </optgroup>
                 </select>
               </div>
               <div class="input-group full"><label>Discount (₹)</label><input type="number" id="discountAmt" value="0" oninput="updatePreview()" /></div>
@@ -192,10 +214,15 @@
             <div id="item-db-area" class="hidden">
                <div class="input-group" style="margin-bottom: 10px;">
                  <label>Add New Item to List</label>
-                 <div style="display: flex; gap: 5px;">
-                   <input type="text" id="dbItemName" placeholder="Item Name" />
-                   <input type="number" id="dbItemRate" placeholder="Rate" style="width: 80px;" />
-                   <button class="mini-add-btn" onclick="addItemToDB()"><i class="fas fa-plus"></i></button>
+                 <div style="display: flex; flex-direction: column; gap: 5px;">
+                   <div style="display: flex; gap: 5px;">
+                     <input type="text" id="dbItemName" placeholder="Item Name (e.g. 2MP Dome Camera)" />
+                     <input type="number" id="dbItemRate" placeholder="Rate" style="width: 80px;" />
+                   </div>
+                   <div style="display: flex; gap: 5px;">
+                     <input type="text" id="dbItemSpec" placeholder="Specification / Model (Optional)" />
+                     <button class="mini-add-btn" onclick="addItemToDB()"><i class="fas fa-plus"></i> Add</button>
+                   </div>
                  </div>
                </div>
                <div id="db-item-list" class="quick-select-grid" style="max-height: 150px;"></div>
@@ -213,22 +240,27 @@
             <div class="card-header"><i class="fas fa-list"></i> Items <span id="item-count" class="count-badge">1/50</span></div>
             <div id="itemsContainer">
               <div class="item-row animated fadeIn">
-                <input type="text" class="item-desc" placeholder="Item" oninput="updatePreview()" />
-                <div style="display: flex; gap: 2px;">
+                <div class="item-fields">
+                  <input type="text" class="item-desc" placeholder="Item Name (e.g. Dome Camera)" oninput="updatePreview()" />
+                  <input type="text" class="item-spec" placeholder="Specification / Model / Details" oninput="updatePreview()" />
+                </div>
+                <div class="item-controls">
                   <input type="number" class="item-qty" placeholder="Qty" value="1" oninput="updatePreview()" />
-                  <select class="item-uom" onchange="updatePreview()" style="width: 60px; padding: 2px;">
+                  <select class="item-uom" onchange="updatePreview()">
                     <option value="Nos">Nos</option>
                     <option value="Mtr">Mtr</option>
                     <option value="Pkt">Pkt</option>
+                    <option value="Set">Set</option>
+                    <option value="Pcs">Pcs</option>
                     <option value="Day">Day</option>
                     <option value="Job">Job</option>
                   </select>
+                  <input type="number" class="item-rate" placeholder="Rate" oninput="updatePreview()" />
+                  <button class="remove-btn" onclick="removeItem(this)"><i class="fas fa-times"></i></button>
                 </div>
-                <input type="number" class="item-rate" placeholder="Rate" oninput="updatePreview()" />
-                <button class="remove-btn" onclick="removeItem(this)"><i class="fas fa-times"></i></button>
               </div>
             </div>
-            <button class="add-btn" id="addBtn" onclick="addItem()"><i class="fas fa-plus"></i> Add Manual Row</button>
+            <button class="add-btn" id="addBtn" onclick="addItem()"><i class="fas fa-plus"></i> Add Item Row</button>
           </section>
 
           <!-- Data Management -->
@@ -278,17 +310,51 @@
             <div class="quote-badge"><span class="label">QUOTATION</span><span class="number" id="p-quotNo">#QT-001</span></div>
           </div>
           <div class="client-info-bar">
-            <div class="info-block"><label>PREPARED FOR</label><strong id="p-custName">Client Name</strong><p id="p-custAddress">Address Details</p><p id="p-custContact">Contact: --</p></div>
-            <div class="info-block text-right"><label>DATE ISSUED</label><strong id="p-date">--/--/----</strong><br/><label>PREPARED BY</label><strong id="p-preparedBy">Amar Mahajan</strong></div>
+            <div class="info-block client-block">
+              <span class="info-badge">PREPARED FOR</span>
+              <strong id="p-custName" class="client-name">Client Name</strong>
+              <div class="client-meta-line" id="p-custAddressWrap"><i class="fas fa-location-dot"></i> <span id="p-custAddress">Address Details</span></div>
+              <div class="client-meta-line" id="p-custContactWrap"><i class="fas fa-phone"></i> <span id="p-custContact">Contact: --</span></div>
+            </div>
+            <div class="info-block meta-block">
+              <div class="meta-item">
+                <span class="meta-label">DATE ISSUED</span>
+                <strong id="p-date" class="meta-value">--/--/----</strong>
+              </div>
+              <div class="meta-item" id="p-validRow">
+                <span class="meta-label" id="p-validLabel">VALID UNTIL</span>
+                <strong id="p-validDate" class="meta-value">--/--/----</strong>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">PREPARED BY</span>
+                <strong id="p-preparedBy" class="meta-value">Amar Mahajan</strong>
+              </div>
+            </div>
           </div>
           <div class="estimate-title">ESTIMATE / QUOTATION</div>
           <div class="table-wrapper">
             <table class="professional-table">
-              <thead><tr><th width="5%">#</th><th width="45%">Description</th><th width="10%">Qty</th><th width="10%">UOM</th><th width="15%">Rate</th><th width="15%">Amount</th></tr></thead>
+              <thead>
+                <tr>
+                  <th width="5%" class="text-center">#</th>
+                  <th width="28%">Item Description</th>
+                  <th width="24%">Specification</th>
+                  <th width="8%" class="text-center">Qty</th>
+                  <th width="8%" class="text-center">Unit</th>
+                  <th width="13%" class="text-right">Rate</th>
+                  <th width="14%" class="text-right">Amount</th>
+                </tr>
+              </thead>
               <tbody id="p-itemsBody"></tbody>
             </table>
           </div>
-          <div class="amount-words"><strong>Total Amount in Words:</strong> <span id="p-amountWords">Rupees Zero Only</span></div>
+          <div class="amount-words">
+            <i class="fas fa-money-bill-wave words-icon"></i>
+            <div>
+              <span class="words-title">Total Amount in Words: </span>
+              <strong id="p-amountWords">Rupees Zero Only</strong>
+            </div>
+          </div>
           <div class="bill-summary">
             <div class="terms-area">
               <h4>Terms & Conditions:</h4>

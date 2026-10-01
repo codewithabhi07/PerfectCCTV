@@ -10,6 +10,34 @@ let standardRates = JSON.parse(localStorage.getItem('perfect_cctv_item_db')) || 
     'Installation Charges': 500, 'Travelling Charges': 300
 };
 
+const defaultSpecs = {
+    'DVR': '4/8 Channel Full HD 1080P DVR',
+    'NVR': '4/8 Channel Ultra HD 4K NVR',
+    'Camera': '2.4MP Full HD IR Night Vision',
+    'Power Supply': '12V DC Multi-Channel SMPS',
+    'Hard-Disk': 'Surveillance Internal HDD',
+    'Cable': '3+1 Solid Copper CCTV Cable (Mtr)',
+    'BNC Connector': 'Copper Pin Heavy Duty',
+    'DC Connector': 'Standard 12V Male Pin',
+    'PVC Box': '4x4 Waterproof Weatherproof Box',
+    'DVR Rack': '2U Metal Wall Mount Enclosure',
+    'Router': 'Dual Band Gigabit Wi-Fi 6',
+    '4/5 G': 'High Speed 4G/5G SIM Router',
+    'POE Switch': '4/8 Port 10/100/1000 Mbps POE',
+    'GIGA Switch': 'Gigabit Network Switch',
+    'CAT 6 Lan Cable': 'Pure Copper Gigabit (Mtr)',
+    'POE Waterproof Rack': 'Outdoor Weatherproof POE Enclosure',
+    'NVR Rack': '4U Wall Mount Network Cabinet',
+    'HDMI Cable': '4K Ultra HD 1.5M / 3M',
+    'Splitter': 'HDMI 1 to 2 Powered Splitter',
+    'Joinder': 'BNC / RJ45 Coupler',
+    'Cable Tie Packet': 'Heavy Nylon Ties (100 Pcs)',
+    'RJ 45 Connector': 'Cat6 Gold Plated Crystal Plug',
+    'Wire Fitting Charges': 'Conduit / Casing Piping & Clipping (Mtr)',
+    'Installation Charges': 'Camera Mounting, Alignment & Setup',
+    'Travelling Charges': 'Site Visit & Transport'
+};
+
 // --- MOBILE NAVIGATION ---
 function switchTab(tab) {
     const inputPanel = document.getElementById('input-panel');
@@ -103,13 +131,84 @@ function loadBizProfile() {
     }
 }
 
+// --- DATE & VALIDITY UTILITIES ---
+function getLocalDateString(dateObj = new Date()) {
+    const y = dateObj.getFullYear();
+    const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const d = String(dateObj.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+}
+
+function parseLocalDate(dateStr) {
+    if (!dateStr) return null;
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+        return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+    }
+    const d = new Date(dateStr);
+    return isNaN(d.getTime()) ? null : d;
+}
+
+function addDaysToDateStr(dateStr, days) {
+    const d = parseLocalDate(dateStr) || new Date();
+    d.setDate(d.getDate() + days);
+    return getLocalDateString(d);
+}
+
+let currentValidityDays = 15; // default 15 days validity
+
+function setValidityDays(days) {
+    currentValidityDays = days;
+    const quoteDateStr = document.getElementById('quotDate').value || getLocalDateString();
+    document.getElementById('validDate').value = addDaysToDateStr(quoteDateStr, days);
+    updatePresetPillUI();
+    updatePreview();
+}
+
+function onCustomValidDateChange() {
+    currentValidityDays = null;
+    updatePresetPillUI();
+    updatePreview();
+}
+
+function handleQuoteDateChange() {
+    if (currentValidityDays !== null) {
+        const quoteDateStr = document.getElementById('quotDate').value;
+        if (quoteDateStr) {
+            document.getElementById('validDate').value = addDaysToDateStr(quoteDateStr, currentValidityDays);
+        }
+    }
+    updatePreview();
+}
+
+function updatePresetPillUI() {
+    document.querySelectorAll('.preset-pill').forEach(pill => pill.classList.remove('active'));
+    if (currentValidityDays === 7) {
+        const p7 = document.querySelector('.preset-pill[onclick="setValidityDays(7)"]');
+        if (p7) p7.classList.add('active');
+    } else if (currentValidityDays === 15) {
+        const p15 = document.getElementById('preset-15');
+        if (p15) p15.classList.add('active');
+    } else if (currentValidityDays === 30) {
+        const p30 = document.querySelector('.preset-pill[onclick="setValidityDays(30)"]');
+        if (p30) p30.classList.add('active');
+    }
+}
+
 document.getElementById('billTheme').value = currentTheme;
 applyTheme(currentTheme);
 loadBizProfile();
 updateQuoteDisplay();
 loadHistory();
 loadItemDB();
-document.getElementById('quotDate').valueAsDate = new Date();
+
+// Initialize with safe local calendar dates
+const initialDate = getLocalDateString();
+document.getElementById('quotDate').value = initialDate;
+document.getElementById('validDate').value = addDaysToDateStr(initialDate, 15);
+currentValidityDays = 15;
+updatePresetPillUI();
+
 generateQuickSelect();
 
 function changeTheme() {
@@ -125,11 +224,13 @@ function applyTheme(theme) {
 
 function updateQuoteDisplay() {
     const docType = document.getElementById('docType').value;
-    const prefix = docType === 'bill' ? 'INV' : 'QT';
+    const isBill = docType === 'bill';
+    const prefix = isBill ? 'INV' : 'QT';
     const formatted = `${prefix}-${String(currentQuoteNo).padStart(3, '0')}`;
     document.getElementById('quotNo').value = formatted;
     document.getElementById('p-quotNo').innerText = `#${formatted}`;
-    document.getElementById('label-docNo').innerText = docType === 'bill' ? 'Invoice No.' : 'Quote No.';
+    document.getElementById('label-docNo').innerText = isBill ? 'Invoice No.' : 'Quote No.';
+    document.getElementById('label-validDate').innerText = isBill ? 'Due Date' : 'Valid Until';
 }
 
 function updateDocType() {
@@ -142,11 +243,19 @@ function loadItemDB() {
     const list = document.getElementById('db-item-list');
     list.innerHTML = '';
     Object.keys(standardRates).forEach(name => {
+        const itemVal = standardRates[name];
+        const rate = typeof itemVal === 'object' ? itemVal.rate : itemVal;
+        const spec = typeof itemVal === 'object' ? (itemVal.spec || '') : (defaultSpecs[name] || '');
         const div = document.createElement('div');
-        div.className = 'quick-item';
-        div.style.display = 'flex';
-        div.style.justifyContent = 'space-between';
-        div.innerHTML = `<span>${name}</span><i class="fas fa-trash" onclick="removeItemFromDB('${name}')" style="color:red; font-size: 0.5rem;"></i>`;
+        div.className = 'quick-item db-item-pill';
+        div.innerHTML = `
+            <div class="db-item-info">
+                <strong>${name}</strong>
+                <span class="db-item-rate">₹${rate}</span>
+                ${spec ? `<small class="db-item-spec">${spec}</small>` : ''}
+            </div>
+            <i class="fas fa-trash db-item-del" onclick="removeItemFromDB('${name}')" title="Delete"></i>
+        `;
         list.appendChild(div);
     });
 }
@@ -154,11 +263,13 @@ function loadItemDB() {
 function addItemToDB() {
     const name = document.getElementById('dbItemName').value.trim();
     const rate = parseFloat(document.getElementById('dbItemRate').value);
-    if (name && rate) {
-        standardRates[name] = rate;
+    const spec = document.getElementById('dbItemSpec') ? document.getElementById('dbItemSpec').value.trim() : '';
+    if (name && !isNaN(rate)) {
+        standardRates[name] = { rate: rate, spec: spec };
         localStorage.setItem('perfect_cctv_item_db', JSON.stringify(standardRates));
         document.getElementById('dbItemName').value = '';
         document.getElementById('dbItemRate').value = '';
+        if (document.getElementById('dbItemSpec')) document.getElementById('dbItemSpec').value = '';
         loadItemDB();
         generateQuickSelect();
     }
@@ -178,11 +289,15 @@ function generateQuickSelect() {
     const grid = document.getElementById('quickSelectGrid');
     grid.innerHTML = '';
     Object.keys(standardRates).forEach(item => {
+        const itemVal = standardRates[item];
+        const rate = typeof itemVal === 'object' ? itemVal.rate : itemVal;
+        const spec = typeof itemVal === 'object' ? (itemVal.spec || '') : (defaultSpecs[item] || '');
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'quick-item';
-        btn.innerText = item;
-        btn.onclick = () => quickAdd(item, standardRates[item]);
+        btn.title = spec ? `${item}: ${spec} (₹${rate})` : `${item} (₹${rate})`;
+        btn.innerHTML = `<span>${item}</span><small style="opacity:0.75; font-size:0.55rem; display:block;">₹${rate}</small>`;
+        btn.onclick = () => quickAdd(item, rate, spec);
         grid.appendChild(btn);
     });
 }
@@ -194,38 +309,50 @@ function filterItems() {
     });
 }
 
-function quickAdd(name, rate) {
+function quickAdd(name, rate, spec = '') {
+    if (!spec && defaultSpecs[name]) {
+        spec = defaultSpecs[name];
+    }
     const rows = document.querySelectorAll('.item-row');
     const lastRow = rows[rows.length - 1];
     const descInput = lastRow.querySelector('.item-desc');
+    const specInput = lastRow.querySelector('.item-spec');
     
     if (descInput.value === "") {
         descInput.value = name;
+        if (specInput) specInput.value = spec;
         lastRow.querySelector('.item-rate').value = rate;
         updatePreview();
     } else if (rows.length < 50) {
-        addItem(name, rate);
+        addItem(name, rate, spec);
     }
 }
 
-function addItem(name = "", rate = "") {
+function addItem(name = "", rate = "", spec = "") {
     const rows = document.querySelectorAll('.item-row');
     if (rows.length < 50) {
         const container = document.getElementById('itemsContainer');
         const newRow = document.createElement('div');
         newRow.className = 'item-row animated fadeIn';
         newRow.innerHTML = `
-            <input type="text" class="item-desc" placeholder="Item" value="${name}" oninput="updatePreview()">
-            <div style="display: flex; gap: 2px;">
+            <div class="item-fields">
+                <input type="text" class="item-desc" placeholder="Item Name (e.g. Dome Camera)" value="${name}" oninput="updatePreview()">
+                <input type="text" class="item-spec" placeholder="Specification / Model / Details" value="${spec}" oninput="updatePreview()">
+            </div>
+            <div class="item-controls">
                 <input type="number" class="item-qty" placeholder="Qty" value="1" oninput="updatePreview()">
-                <select class="item-uom" onchange="updatePreview()" style="width: 60px; padding: 2px;">
-                    <option value="Nos">Nos</option><option value="Mtr">Mtr</option>
-                    <option value="Pkt">Pkt</option><option value="Day">Day</option>
+                <select class="item-uom" onchange="updatePreview()">
+                    <option value="Nos">Nos</option>
+                    <option value="Mtr">Mtr</option>
+                    <option value="Pkt">Pkt</option>
+                    <option value="Set">Set</option>
+                    <option value="Pcs">Pcs</option>
+                    <option value="Day">Day</option>
                     <option value="Job">Job</option>
                 </select>
+                <input type="number" class="item-rate" placeholder="Rate" value="${rate}" oninput="updatePreview()">
+                <button class="remove-btn" onclick="removeItem(this)"><i class="fas fa-times"></i></button>
             </div>
-            <input type="number" class="item-rate" placeholder="Rate" value="${rate}" oninput="updatePreview()">
-            <button class="remove-btn" onclick="removeItem(this)"><i class="fas fa-times"></i></button>
         `;
         container.appendChild(newRow);
         updatePreview();
@@ -234,7 +361,7 @@ function addItem(name = "", rate = "") {
 
 function removeItem(btn) {
     if (document.querySelectorAll('.item-row').length > 1) {
-        btn.parentElement.remove();
+        btn.closest('.item-row').remove();
         updatePreview();
     }
 }
@@ -246,16 +373,19 @@ function updatePreview() {
     const badgeLabel = document.querySelector('.quote-badge .label');
     const estTitle = document.querySelector('.estimate-title');
     const curr = document.getElementById('currency').value;
+    const isBill = docType === 'bill';
 
-    // Document Type
-    if (docType === 'bill') {
+    // Document Type & Badges
+    if (isBill) {
         previewContainer.classList.add('bill-mode');
         badgeLabel.innerText = "INVOICE";
         estTitle.innerText = "TAX INVOICE";
+        document.getElementById('p-validLabel').innerText = "DUE DATE";
     } else {
         previewContainer.classList.remove('bill-mode');
         badgeLabel.innerText = "QUOTATION";
         estTitle.innerText = "ESTIMATE / QUOTATION";
+        document.getElementById('p-validLabel').innerText = "VALID UNTIL";
     }
 
     // Business Details
@@ -276,14 +406,35 @@ function updatePreview() {
     document.getElementById('p-footerMsg').innerText = bizFooterMsg;
     document.getElementById('p-footerSlogan').innerText = bizFooterSlogan;
     document.getElementById('p-myBizGST').innerText = bizGST;
-    document.getElementById('p-gstRow').style.display = bizGST ? 'flex' : 'none';
-    document.getElementById('p-bankDetails').innerText = bizBank || "N/A";
+    const gstRow = document.getElementById('p-gstRow');
+    if (gstRow) gstRow.style.display = bizGST ? 'flex' : 'none';
+    const bankDetailsEl = document.getElementById('p-bankDetails');
+    const bankInfoEl = document.getElementById('p-bankInfo');
+    if (bizBank && bizBank.trim()) {
+        if (bankDetailsEl) bankDetailsEl.innerText = bizBank;
+        if (bankInfoEl) bankInfoEl.style.display = 'block';
+    } else {
+        if (bankDetailsEl) bankDetailsEl.innerText = "";
+        if (bankInfoEl) bankInfoEl.style.display = 'none';
+    }
     
     // Client Details
     document.getElementById('p-custName').innerText = document.getElementById('custName').value || "Client Name";
     document.getElementById('p-custAddress').innerText = document.getElementById('custAddress').value || "Installation Address";
     document.getElementById('p-custContact').innerText = "Contact: " + (document.getElementById('custContact').value || "--");
-    document.getElementById('p-date').innerText = formatDate(document.getElementById('quotDate').value);
+    
+    // Dates
+    const quotDateVal = document.getElementById('quotDate').value;
+    const validDateVal = document.getElementById('validDate').value;
+    document.getElementById('p-date').innerText = formatDate(quotDateVal);
+    const validRow = document.getElementById('p-validRow');
+    if (validDateVal) {
+        document.getElementById('p-validDate').innerText = formatDate(validDateVal);
+        validRow.style.display = 'flex';
+    } else {
+        document.getElementById('p-validDate').innerText = "--/--/----";
+        validRow.style.display = 'none';
+    }
 
     // Items
     const rows = document.querySelectorAll('.item-row');
@@ -294,6 +445,7 @@ function updatePreview() {
     let subtotal = 0;
     rows.forEach((row, index) => {
         const desc = row.querySelector('.item-desc').value || "--";
+        const spec = row.querySelector('.item-spec') ? row.querySelector('.item-spec').value : "";
         const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
         const uom = row.querySelector('.item-uom').value;
         const rate = parseFloat(row.querySelector('.item-rate').value) || 0;
@@ -301,7 +453,15 @@ function updatePreview() {
         subtotal += amount;
 
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${index + 1}</td><td><strong>${desc}</strong></td><td>${qty}</td><td>${uom}</td><td>${curr}${rate.toLocaleString('en-IN')}</td><td>${curr}${amount.toLocaleString('en-IN')}</td>`;
+        tr.innerHTML = `
+            <td class="text-center">${index + 1}</td>
+            <td><strong class="item-name">${desc}</strong></td>
+            <td class="item-spec-cell">${spec ? spec : '<span style="color:#94a3b8;">-</span>'}</td>
+            <td class="text-center">${qty}</td>
+            <td class="text-center"><span class="item-uom-tag">${uom}</span></td>
+            <td class="text-right">${curr}${rate.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+            <td class="text-right amount-cell"><strong>${curr}${amount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong></td>
+        `;
         previewBody.appendChild(tr);
     });
 
@@ -322,22 +482,22 @@ function updatePreview() {
             const half = gstAmount / 2;
             const halfRate = gstRate / 2;
             gstBreakdown.innerHTML = `
-                <div class="gst-row"><span>CGST (${halfRate}%):</span><span>${curr}${half.toLocaleString('en-IN')}</span></div>
-                <div class="gst-row"><span>SGST (${halfRate}%):</span><span>${curr}${half.toLocaleString('en-IN')}</span></div>`;
+                <div class="gst-row"><span>CGST (${halfRate}%):</span><span>${curr}${half.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span></div>
+                <div class="gst-row"><span>SGST (${halfRate}%):</span><span>${curr}${half.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span></div>`;
         } else {
-            gstBreakdown.innerHTML = `<div class="gst-row"><span>IGST (${gstRate}%):</span><span>${curr}${gstAmount.toLocaleString('en-IN')}</span></div>`;
+            gstBreakdown.innerHTML = `<div class="gst-row"><span>IGST (${gstRate}%):</span><span>${curr}${gstAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span></div>`;
         }
     }
 
     const grandTotal = taxableAmount + gstAmount;
 
-    document.getElementById('p-subtotal').innerText = `${curr}${subtotal.toLocaleString('en-IN')}`;
-    document.getElementById('p-discount').innerText = `-${curr}${discount.toLocaleString('en-IN')}`;
-    document.getElementById('p-grandtotal').innerText = `${curr}${grandTotal.toLocaleString('en-IN')}`;
+    document.getElementById('p-subtotal').innerText = `${curr}${subtotal.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    document.getElementById('p-discount').innerText = `-${curr}${discount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    document.getElementById('p-grandtotal').innerText = `${curr}${grandTotal.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
     document.getElementById('p-discRow').style.display = discount > 0 ? 'flex' : 'none';
 
-    document.getElementById('p-amountWords').innerText = convertNumberToWords(grandTotal) + " Only";
-    document.getElementById('p-terms').innerHTML = document.getElementById('termsCond').value.split('\n').map(t => `<li>${t}</li>`).join('');
+    document.getElementById('p-amountWords').innerText = convertNumberToWords(grandTotal);
+    document.getElementById('p-terms').innerHTML = document.getElementById('termsCond').value.split('\n').filter(t => t.trim() !== '').map(t => `<li>${t}</li>`).join('');
     
     // Save Profile & Draft
     saveProfile();
@@ -384,22 +544,32 @@ function saveProfile() {
 
 function formatDate(dateStr) {
     if (!dateStr) return "--/--/----";
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+        const [y, m, d] = parts;
+        return `${d}-${m}-${y}`;
+    }
     const d = new Date(dateStr);
-    return `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}`;
+    if (isNaN(d.getTime())) return dateStr;
+    return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
 }
 
 function convertNumberToWords(amount) {
-    if (amount === 0) return "Zero";
-    const words = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+    amount = Math.round(amount);
+    if (!amount || amount === 0) return "Rupees Zero Only";
+    const ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
+        "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
     const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
-    function convert(n) {
-        if (n < 20) return words[n];
-        if (n < 100) return tens[Math.floor(n / 10)] + (n % 10 !== 0 ? " " + words[n % 10] : "");
-        if (n < 1000) return words[Math.floor(n / 100)] + " Hundred" + (n % 100 !== 0 ? " and " + convert(n % 100) : "");
-        if (n < 100000) return convert(Math.floor(n / 1000)) + " Thousand" + (n % 1000 !== 0 ? " " + convert(n % 1000) : "");
-        return "";
+
+    function numToWords(n) {
+        if (n < 20) return ones[n];
+        if (n < 100) return tens[Math.floor(n / 10)] + (n % 10 !== 0 ? " " + ones[n % 10] : "");
+        if (n < 1000) return ones[Math.floor(n / 100)] + " Hundred" + (n % 100 !== 0 ? " " + numToWords(n % 100) : "");
+        if (n < 100000) return numToWords(Math.floor(n / 1000)) + " Thousand" + (n % 1000 !== 0 ? " " + numToWords(n % 1000) : "");
+        if (n < 10000000) return numToWords(Math.floor(n / 100000)) + " Lakh" + (n % 100000 !== 0 ? " " + numToWords(n % 100000) : "");
+        return numToWords(Math.floor(n / 10000000)) + " Crore" + (n % 10000000 !== 0 ? " " + numToWords(n % 10000000) : "");
     }
-    return convert(Math.floor(amount));
+    return "Rupees " + numToWords(amount).trim() + " Only";
 }
 
 // --- DATA MANAGEMENT ---
@@ -415,7 +585,7 @@ function exportData() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `CCTV_PRO_BACKUP_${new Date().toISOString().slice(0,10)}.json`;
+    a.download = `CCTV_PRO_BACKUP_${getLocalDateString()}.json`;
     a.click();
 }
 
@@ -447,6 +617,7 @@ function printAndSave() {
         name: name,
         total: document.getElementById('p-grandtotal').innerText,
         date: formatDate(document.getElementById('quotDate').value),
+        validDate: formatDate(document.getElementById('validDate').value),
         data: captureFormData()
     });
     localStorage.setItem('perfect_cctv_history', JSON.stringify(history.slice(0, 20)));
@@ -459,10 +630,24 @@ function printAndSave() {
 function captureFormData() {
     const items = [];
     document.querySelectorAll('.item-row').forEach(row => {
-        items.push({ d: row.querySelector('.item-desc').value, q: row.querySelector('.item-qty').value, r: row.querySelector('.item-rate').value, u: row.querySelector('.item-uom').value });
+        items.push({
+            d: row.querySelector('.item-desc').value,
+            s: row.querySelector('.item-spec') ? row.querySelector('.item-spec').value : '',
+            q: row.querySelector('.item-qty').value,
+            r: row.querySelector('.item-rate').value,
+            u: row.querySelector('.item-uom').value
+        });
     });
     const name = document.getElementById('custName').value;
-    return { name: name, addr: document.getElementById('custAddress').value, ph: document.getElementById('custContact').value, items: items };
+    return {
+        name: name,
+        addr: document.getElementById('custAddress').value,
+        ph: document.getElementById('custContact').value,
+        date: document.getElementById('quotDate').value,
+        validDate: document.getElementById('validDate').value,
+        validDays: currentValidityDays,
+        items: items
+    };
 }
 
 function loadHistory() {
@@ -480,12 +665,19 @@ function loadHistory() {
 function reloadQuote(index) {
     const history = JSON.parse(localStorage.getItem('perfect_cctv_history'));
     const q = history[index].data;
+    if (!q) return;
     document.getElementById('custName').value = q.name || "";
     document.getElementById('custAddress').value = q.addr || "";
     document.getElementById('custContact').value = q.ph || "";
+    if (q.date) document.getElementById('quotDate').value = q.date;
+    if (q.validDate) document.getElementById('validDate').value = q.validDate;
+    currentValidityDays = q.validDays !== undefined ? q.validDays : null;
+    updatePresetPillUI();
     const container = document.getElementById('itemsContainer');
     container.innerHTML = '';
-    q.items.forEach(it => addItem(it.d, it.r));
+    if (q.items && q.items.length > 0) {
+        q.items.forEach(it => addItem(it.d, it.r, it.s || ''));
+    }
     updatePreview();
 }
 
@@ -494,19 +686,30 @@ function confirmClear() {
         document.getElementById('custName').value = '';
         document.getElementById('custAddress').value = '';
         document.getElementById('custContact').value = '';
+        
+        const todayStr = getLocalDateString();
+        document.getElementById('quotDate').value = todayStr;
+        document.getElementById('validDate').value = addDaysToDateStr(todayStr, 15);
+        currentValidityDays = 15;
+        updatePresetPillUI();
+
         document.getElementById('itemsContainer').innerHTML = `
             <div class="item-row animated fadeIn">
-                <input type="text" class="item-desc" placeholder="Item" oninput="updatePreview()">
-                <div style="display: flex; gap: 2px;">
+                <div class="item-fields">
+                    <input type="text" class="item-desc" placeholder="Item Name (e.g. Dome Camera)" oninput="updatePreview()">
+                    <input type="text" class="item-spec" placeholder="Specification / Model / Details" oninput="updatePreview()">
+                </div>
+                <div class="item-controls">
                     <input type="number" class="item-qty" placeholder="Qty" value="1" oninput="updatePreview()">
-                    <select class="item-uom" onchange="updatePreview()" style="width: 60px; padding: 2px;">
+                    <select class="item-uom" onchange="updatePreview()">
                         <option value="Nos">Nos</option><option value="Mtr">Mtr</option>
-                        <option value="Pkt">Pkt</option><option value="Day">Day</option>
+                        <option value="Pkt">Pkt</option><option value="Set">Set</option>
+                        <option value="Pcs">Pcs</option><option value="Day">Day</option>
                         <option value="Job">Job</option>
                     </select>
+                    <input type="number" class="item-rate" placeholder="Rate" oninput="updatePreview()">
+                    <button class="remove-btn" onclick="removeItem(this)"><i class="fas fa-times"></i></button>
                 </div>
-                <input type="number" class="item-rate" placeholder="Rate" oninput="updatePreview()">
-                <button class="remove-btn" onclick="removeItem(this)"><i class="fas fa-times"></i></button>
             </div>`;
         updateQuoteDisplay();
         updatePreview();
@@ -517,10 +720,23 @@ function shareWhatsApp() {
     const name = document.getElementById('custName').value || "Customer";
     const total = document.getElementById('p-grandtotal').innerText;
     const docNo = document.getElementById('quotNo').value;
-    let msg = `*${document.getElementById('myBizName').value}*\n*DOC NO:* ${docNo}\n*TO:* ${name}\n*TOTAL:* ${total}\n------------------\n`;
+    const isBill = document.getElementById('docType').value === 'bill';
+    const docTitle = isBill ? 'INVOICE' : 'QUOTATION';
+    const dateIssued = formatDate(document.getElementById('quotDate').value);
+    const validUntil = formatDate(document.getElementById('validDate').value);
+    const validLabel = isBill ? 'DUE DATE' : 'VALID UNTIL';
+
+    let msg = `*${document.getElementById('myBizName').value}*\n*${docTitle} NO:* ${docNo}\n*DATE:* ${dateIssued}\n*${validLabel}:* ${validUntil}\n*TO:* ${name}\n*TOTAL:* ${total}\n------------------\n`;
     document.querySelectorAll('.item-row').forEach((row, i) => {
         const d = row.querySelector('.item-desc').value;
-        if (d) msg += `${i+1}. ${d} (${row.querySelector('.item-qty').value} ${row.querySelector('.item-uom').value}) = ${document.getElementById('currency').value}${row.querySelector('.item-rate').value * row.querySelector('.item-qty').value}\n`;
+        const s = row.querySelector('.item-spec') ? row.querySelector('.item-spec').value : '';
+        if (d) {
+            const qty = row.querySelector('.item-qty').value;
+            const uom = row.querySelector('.item-uom').value;
+            const rate = row.querySelector('.item-rate').value;
+            const specText = s ? ` [${s}]` : '';
+            msg += `${i+1}. ${d}${specText} (${qty} ${uom}) = ${document.getElementById('currency').value}${rate * qty}\n`;
+        }
     });
     msg += `------------------\n📍 ${document.getElementById('myBizAddress').value}\n📞 ${document.getElementById('myBizContact').value}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
