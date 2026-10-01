@@ -209,6 +209,10 @@ document.getElementById('validDate').value = addDaysToDateStr(initialDate, 15);
 currentValidityDays = 15;
 updatePresetPillUI();
 
+let currentSpecSize = localStorage.getItem('perfect_cctv_spec_size') || 'normal';
+applySpecFontSize(currentSpecSize);
+updateSpecSizeUI();
+
 generateQuickSelect();
 
 function changeTheme() {
@@ -220,6 +224,31 @@ function changeTheme() {
 function applyTheme(theme) {
     const container = document.querySelector('.app-container');
     container.setAttribute('data-theme', theme);
+}
+
+function setSpecFontSize(size) {
+    currentSpecSize = size;
+    localStorage.setItem('perfect_cctv_spec_size', size);
+    applySpecFontSize(size);
+    updateSpecSizeUI();
+}
+
+function applySpecFontSize(size) {
+    const bill = document.getElementById('bill-preview');
+    if (!bill) return;
+    bill.classList.remove('spec-size-small', 'spec-size-normal', 'spec-size-medium', 'spec-size-large');
+    bill.classList.add(`spec-size-${size}`);
+}
+
+function updateSpecSizeUI() {
+    const pills = document.querySelectorAll('#specSizePills .preset-pill');
+    pills.forEach(p => {
+        if (p.getAttribute('data-size') === currentSpecSize) {
+            p.classList.add('active');
+        } else {
+            p.classList.remove('active');
+        }
+    });
 }
 
 function updateQuoteDisplay() {
